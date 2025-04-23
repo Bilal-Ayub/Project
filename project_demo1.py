@@ -1,4 +1,3 @@
-import numpy as np
 import math
 
 
@@ -110,14 +109,11 @@ class KdNode:  # part of kdtree
 
 # Build a simple kd-tree (for demonstration purposes)
 def build_kd_tree(objects, depth=0):
+    """Builds a KD-tree represented as nested dicts."""
     if not objects:
         return None
-
-    # Choose axis based on depth
     axis = depth % 3
 
-    # Sort objects along the chosen axis
-    # objects.sort(key=lambda obj: obj.center.x if axis == 0 else obj.center.y if axis == 1 else obj.center.z)
     def sort_key(obj):
         if axis == 0:
             return obj.center[0]
@@ -127,41 +123,35 @@ def build_kd_tree(objects, depth=0):
             return obj.center[2]
 
     objects.sort(key=sort_key)
-
-    # Find the median
     median = len(objects) // 2
-
-    # Recursively build the tree
-    return KdNode(
-        left=build_kd_tree(objects[:median], depth + 1),
-        right=build_kd_tree(objects[median + 1 :], depth + 1),
-        objects=[objects[median]],
-    )
+    # Create dict node
+    return {
+        "value": objects[median],  # store the Sphere object
+        "left": build_kd_tree(objects[:median], depth + 1),
+        "right": build_kd_tree(objects[median + 1 :], depth + 1),
+    }
 
 
 # Traverse the kd-tree to find intersections
-def intersect_kd_tree(ray, node):  # find the smallest intersection
+
+
+def intersect_kd_tree(ray, node):
+    """Traverses dict-based KD-tree to find closest sphere intersection t."""
     if node is None:
         return None
-
-    # Check intersection with the current node's objects
-    hit = None
-    for obj in node.objects:
-        t = obj.intersect(ray)
-        if t is not None and (hit is None or t < hit):
-            hit = t
-
-    # Traverse the left and right subtrees
-    hit_left = intersect_kd_tree(ray, node.left)
-    hit_right = intersect_kd_tree(ray, node.right)
-
-    # Find the closest hit
-    if hit_left is not None and (hit is None or hit_left < hit):
-        hit = hit_left
-    if hit_right is not None and (hit is None or hit_right < hit):
-        hit = hit_right
-
-    return hit
+    hit_t = None
+    # Check this node's sphere
+    sphere = node["value"]
+    t = sphere.intersect(ray)
+    if t is not None:
+        hit_t = t
+    # Traverse children
+    left_t = intersect_kd_tree(ray, node["left"])
+    right_t = intersect_kd_tree(ray, node["right"])
+    for child_t in (left_t, right_t):
+        if child_t is not None and (hit_t is None or child_t < hit_t):
+            hit_t = child_t
+    return hit_t
 
 
 def test_case_1():
