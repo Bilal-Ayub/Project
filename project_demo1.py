@@ -3,27 +3,54 @@ import math
 
 
 # Class for vector
-class Vector:
-    def __init__(self, x, y, z): #values are initialized (x,y,z) dimensions
-        self.x = x
-        self.y = y
-        self.z = z
+# class Vector:
+#     def __init__(self, x, y, z): #values are initialized (x,y,z) dimensions
+#         self.x = x
+#         self.y = y
+#         self.z = z
 
-    def __sub__(self, other):  # vector subtraction
-        return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
+#     def __sub__(self, other):  # vector subtraction
+#         return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
 
-    def __add__(self, other):  # vector addition -> returns new vector after this operation
-        return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
+#     def __add__(self, other):  # vector addition -> returns new vector after this operation
+#         return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
 
-    def dot(self, other): #scalar dot product of vector
-        return self.x * other.x + self.y * other.y + self.z * other.z
+#     def dot(self, other): #scalar dot product of vector
+#         return self.x * other.x + self.y * other.y + self.z * other.z
 
-    def length(self): # uses dot product to find the magnitude of vector
-        return np.sqrt(self.dot(self))
+#     def length(self): # uses dot product to find the magnitude of vector
+#         return np.sqrt(self.dot(self))
 
-    def normalize(self): #returns unit vector (divides each component by its magnitude: length here)
-        length = self.length()
-        return Vector(self.x / length, self.y / length, self.z / length)
+#     def normalize(self): #returns unit vector (divides each component by its magnitude: length here)
+#         length = self.length()
+#         return Vector(self.x / length, self.y / length, self.z / length)
+
+""" Define vector using NumPy array. The operation carries our further mathematical operations and returns 
+NumPy arrays that contains the x,y,z coords of the shape we are rendering"""
+
+def vector(x,y,z):
+    """Creates a vector as a NumPy array"""
+    return np.array([x,y,z], type= float)
+
+def vector_subtraction(v1,v2):
+    """returns 2 vector's subtraction"""
+    return v1 - v2
+
+def vector_addition(v1,v2):
+    """returns 2 vector's addition"""
+    return v1+v2
+
+def dot_product(v1,v2):
+    """Returns dot product of 2 vectors"""
+    return np.dot(v1,v2) #imported library operations
+
+def length_of_vector(v):
+    """returns magnitude of a vector"""
+    return np.sqrt(dot_product(v,v))
+
+def normalize(v):
+    """returns vector after converting it to its unit vector"""
+    return v / length_of_vector(v)
 
 
 class Ray: #class for Ray: uses origin (vector) and direction Vec
